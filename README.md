@@ -35,7 +35,7 @@ const cancel = tween(1, 10, { onComplete: console.warn });
 ### Custom interpolator
 ```javascript
 import makeTween from 'raf-tween';
-import d3Interpolate from 'd3-interpolate';
+import { interpolate } from 'd3-interpolate';
 
 const a = { x: 1, y: 101 };
 const b = { x: 10, y: -110 };
