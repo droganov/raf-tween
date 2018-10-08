@@ -1,37 +1,61 @@
-# NPM Module Boilerplate
+# A factory for creating cancelable raf tweens
 
-[![Build Status](https://travis-ci.org/flexdinesh/npm-module-boilerplate.svg?branch=master)](https://travis-ci.org/flexdinesh/npm-module-boilerplate) [![dependencies Status](https://david-dm.org/flexdinesh/npm-module-boilerplate/status.svg)](https://david-dm.org/flexdinesh/npm-module-boilerplate) [![devDependencies Status](https://david-dm.org/flexdinesh/npm-module-boilerplate/dev-status.svg)](https://david-dm.org/flexdinesh/npm-module-boilerplate?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+### Basic usage
+```javascript
+import makeTween from 'raf-tween';
 
-**Start developing your NPM module in seconds** ✨
+const animate = makeTween({
+  onUpdate: console.log,
+});
 
-Readymade boilerplate setup with all the best practices to kick start your npm/node module development.
+const cancel = animate(1, 10);
+```
 
-Happy hacking =)
+### Options
+```javascript
+// no need to pass by default:
+const defaultOptions = {
+  draw: (a, b, progress) => ((b - a) * progress) + a,
+  duration: 608,
+  ease: timeFraction => timeFraction,
+};
 
-# Features
+// can be optionally provided
+const options = {
+  onComplete: console.log('Tween complete'),
+};
 
-* **ES6/ESNext** - Write _ES6_ code and _Babel_ will transpile it to ES5 for backwards compatibility
-* **Test** - _Mocha_ with _Istanbul_ coverage
-* **Lint** - Preconfigured _ESlint_ with _Airbnb_ config
-* **CI** - _TravisCI_ configuration setup
-* **Minify** - Built code will be minified for performance
+const requiredOptions = { onUpdate: console.log };
 
-# Commands
-- `npm run clean` - Remove `lib/` directory
-- `npm test` - Run tests with linting and coverage results.
-- `npm test:only` - Run tests without linting or coverage.
-- `npm test:watch` - You can even re-run tests on file changes!
-- `npm test:prod` - Run tests with minified code.
-- `npm run test:examples` - Test written examples on pure JS for better understanding module usage.
-- `npm run lint` - Run ESlint with airbnb-config
-- `npm run cover` - Get coverage report for your code.
-- `npm run build` - Babel will transpile ES6 => ES5 and minify the code.
-- `npm run prepublish` - Hook for npm. Do all the checks before publishing your module.
+// 2 ways to pass options, instance options win
+const animate = makeTween({ ...requiredOptions, ...options });
+const cancel = animate(1, 10, { onComplete: console.warn });
+```
 
-# Installation
-Just clone this repo and remove `.git` folder.
+### Advanced draw
+```javascript
+import makeTween from 'raf-tween';
 
+const animate = makeTween({
+  draw: (a, b, progress) => ({
+    x: simpleDraw(a.x, b.x, progress),
+    y: simpleDraw(a.y, b.y, progress),
+  }),
+  onUpdate: console.log,
+});
 
-# License
+animate({ x: 1, y: 101 }, { x: 10, y: -110 });
+```
 
-MIT © Dinesh Pandiyan
+### Advanced easing
+```javascript
+import makeTween, { simpleDraw } from 'raf-tween';
+import expoOut from 'eases/expo-out';
+
+const animate = makeTween({
+  ease: expoOut,
+  onUpdate: console.log,
+});
+
+...
+```

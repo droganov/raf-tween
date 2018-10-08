@@ -1,10 +1,36 @@
-const defaultAwesomeFunction = (name) => {
-  const returnStr = `I am the Default Awesome Function, fellow comrade! - ${name}`;
-  return returnStr;
+import raf from 'raf';
+
+export const simpleDraw = (a, b, progress) => ((b - a) * progress) + a;
+
+const defaultOptions = {
+  draw: simpleDraw,
+  duration: 608,
+  ease: timeFraction => timeFraction,
 };
 
-const awesomeFunction = () => 'I am just an Awesome Function';
+const merge = (a, b) => Object.assign({}, a, b);
 
-export default defaultAwesomeFunction;
-
-export { awesomeFunction };
+export default (options) => {
+  const factoryOptions = merge(defaultOptions, options);
+  return (initial, next, requestOptions) => {
+    const {
+      draw,
+      ease,
+      onUpdate,
+      onComplete,
+    } = merge(factoryOptions, requestOptions);
+    const start = performance.now();
+    let frame = raf(function animate(time) {
+      const timeFraction = Math.min((time - start) / options.duration, 1);
+      const progress = ease(timeFraction);
+      const nextValue = draw(initial, next, progress);
+      onUpdate(nextValue);
+      if (timeFraction < 1) {
+        frame = raf(animate);
+      } else if (onComplete) {
+        onComplete();
+      }
+    });
+    return () => raf.cancel(frame);
+  };
+};
