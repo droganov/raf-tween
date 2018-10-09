@@ -1,6 +1,6 @@
 {
   "name": "raf-tween",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A factory for creating cancelable raf tweens",
   "main": "./lib/index.js",
   "scripts": {
